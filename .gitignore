@@ -1,0 +1,57 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# C extensions
+*.so
+
+# Virtual environment
+.venv/
+.env/
+
+# Flask and Python environment variables
+*.env
+*.flaskenv
+
+# macOS system files
+.DS_Store
+
+# Logs and database
+*.log
+*.sqlite3
+instance/
+
+# Pytest cache
+.pytest_cache/
+.coverage
+.cache
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Migrations
+migrations/
+
+# MyPy and other static analysis tools
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# IDE files
+.vscode/
+.idea/
+
+# Compiled static files
+staticfiles/
+node_modules/
+
+# Docker files
+*.pid
+__MACOSX/
+
+# Unit test / coverage reports
+htmlcov/
+*.cover
+*.py,cover
