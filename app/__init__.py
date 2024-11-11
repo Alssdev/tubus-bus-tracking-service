@@ -1,7 +1,9 @@
 from flask import Flask
+
+from app.services import tracking_services
 from .config import Config
 from .routes import tracking
-from .dao.tracking_dao import TrackingDAO
+from .dao import dao
 
 def create_app():
     app = Flask(__name__)
@@ -12,6 +14,9 @@ def create_app():
     app.register_blueprint(tracking.bp, url_prefix="/api")
 
     # init db
-    TrackingDAO.init()
+    dao.init()
+
+    # init services
+    tracking_services.init()
 
     return app

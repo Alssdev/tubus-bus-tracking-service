@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app
-from ..services.tracking_services import TrackingService
+from app.services import tracking_services
 
 bp = Blueprint('tracking', __name__)
 

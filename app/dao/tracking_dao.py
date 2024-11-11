@@ -1,21 +1,24 @@
-from flask import current_app
-import psycopg2
+import app.dao.dao as dao
 
-class TrackingDAO:
-  _conn = None
-  _cursor = None
+def read_bus_routes():
+  # retrive bus routes
+  cur = dao.get_cursor()
+  cur.execute('SELECT id,numero FROM rutas')
+  routes = cur.fetchall()
+  cur.close()
 
-  @staticmethod
-  def init():
-    _conn = psycopg2.connect(
-      database=current_app.config['DB_DATABASE'],
-      host=current_app.config['DB_HOST'],
-      user=current_app.config['DB_USER'],
-      password=current_app.config['DB_PASSWORD'],
-      port=current_app.config['DB_PORT']
-    )
-    print('⚡ db connection succeeded')
+  # store routes and waypoints in a dict.
+  # [route_id] -> [w0, w1, w2, w3]
+  bus_routes = {}
 
-  @staticmethod
-  def read_route_paths():
-    return {}
+  # retrive waypoints
+  for route in routes:
+    # retrive waypoints
+    cur = dao.get_cursor()
+    cur.execute('SELECT latitud, longitud FROM ruta_puntos WHERE id_ruta=%s', (route[0],))
+    waypoints = cur.fetchall()
+    cur.close()
+
+    bus_routes[route[0]] = waypoints
+
+  return bus_routes
