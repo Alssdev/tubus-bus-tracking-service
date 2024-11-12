@@ -1,6 +1,6 @@
 import app.dao.dao as dao
 
-def read_bus_routes():
+def read_bus_routes ():
   # retrive bus routes
   cur = dao.get_cursor()
   cur.execute('SELECT id,numero FROM rutas')

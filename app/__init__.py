@@ -11,7 +11,7 @@ def create_app():
     app.app_context().push()
 
     # blueprints
-    app.register_blueprint(tracking.bp, url_prefix="/api")
+    app.register_blueprint(tracking.bp, url_prefix="/api/tracking")
 
     # init db
     dao.init()
