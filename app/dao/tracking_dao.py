@@ -15,7 +15,7 @@ def read_bus_routes():
   for route in routes:
     # retrive waypoints
     cur = dao.get_cursor()
-    cur.execute('SELECT latitud, longitud FROM ruta_puntos WHERE id_ruta=%s', (route[0],))
+    cur.execute('SELECT longitud, latitud FROM ruta_puntos WHERE id_ruta=%s', (route[0],))
     waypoints = cur.fetchall()
     cur.close()
 
