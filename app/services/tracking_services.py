@@ -1,3 +1,4 @@
+from typing_extensions import List
 from shapely.geometry.linestring import LineString
 from shapely.geometry.point import Point
 
@@ -12,6 +13,10 @@ import json
 # struct for store all bus routes and its waypoints
 _bus_routes: dict[int, LineString] = {}
 _bus_stops: dict = {}
+
+# store distance in the route for each bus.
+# bus_id -> distance
+_last_know_distance: dict[int, float] = {}
 
 def init():
   global _bus_routes
@@ -29,7 +34,7 @@ def init():
     _bus_stops[bus_stop[0]] = BusStop(bus_stop[0], bus_stop[1], bus_stop[2],  bus_stop[3])
 
 
-def map_point_to_route (lat: float, lng: float, route_id: int):
+def map_point_to_route (lat: float, lng: float, route_id: int, bus_id: int):
   assert(route_id in _bus_routes)
 
   point = Point(lng, lat) # x->lng, lat->lat
@@ -37,6 +42,13 @@ def map_point_to_route (lat: float, lng: float, route_id: int):
   if point.distance(_bus_routes[route_id]) <= 0.00045:
     bus_distance = _bus_routes[route_id].project(point)
     bus_point = _bus_routes[route_id].interpolate(bus_distance)
+
+    # save point
+    if bus_id in _last_know_distance:
+      if bus_distance <= _last_know_distance[bus_id]:
+        return None
+
+    _last_know_distance[bus_id] = bus_distance
 
     return bus_point
   else:
@@ -74,6 +86,6 @@ def notify_listeners(bus_point):
         'lng': stop.lng
       },
       'distance_km': forward_distance,
-      'eta': 0
+      'eta_min': forward_distance / 30 * 60
     }
-    notify_group(json.dumps(message), bsi)
+    notify_group(message, bsi)

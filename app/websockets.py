@@ -1,6 +1,6 @@
 from flask_socketio import SocketIO, join_room
 
-socketio = None
+socketio = None | SocketIO
 group_listeners = []
 
 def _handle_connect(data):
@@ -27,5 +27,4 @@ def create_socketio(app):
   return socketio
 
 def notify_group(data, group):
-  global socketio
   socketio.send(data, to=group)

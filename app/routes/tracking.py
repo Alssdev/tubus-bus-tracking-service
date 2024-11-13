@@ -15,7 +15,7 @@ def receive_bus_location():
     # bus must be active to accept tracking info
     if bus['is_active']:
       # then save new position
-      newPoint = tracking_services.map_point_to_route(data['lat'], data['lng'], bus['route_id'])
+      newPoint = tracking_services.map_point_to_route(data['lat'], data['lng'], bus['route_id'], data['bus_id'])
 
       # if error
       if not newPoint:
