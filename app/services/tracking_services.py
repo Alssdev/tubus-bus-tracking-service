@@ -38,13 +38,11 @@ def map_point_to_route (lat: float, lng: float, route_id: int):
     bus_distance = _bus_routes[route_id].project(point)
     bus_point = _bus_routes[route_id].interpolate(bus_distance)
 
-    notify_listeners(bus_point, bus_distance)
-
     return bus_point
   else:
     return None
 
-def notify_listeners(bus_point, bus_distance):
+def notify_listeners(bus_point):
   # bsi ~ bus stop id
   for bsi in group_listeners:
     assert(bsi in _bus_stops)
@@ -52,6 +50,9 @@ def notify_listeners(bus_point, bus_distance):
     # bus stop and route data
     stop = _bus_stops[bsi]
     route = _bus_routes[stop.route_id]
+
+    # bus distance
+    bus_distance = route.project(bus_point)
 
     # bus stop position and distance
     point = Point(stop.lng, stop.lat)

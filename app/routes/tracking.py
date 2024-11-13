@@ -21,6 +21,8 @@ def receive_bus_location():
       if not newPoint:
         return jsonify({ 'new_location': None })
 
+      tracking_services.notify_listeners(newPoint)
+
       return jsonify({
         'new_location': {
           'lat': newPoint.y,
