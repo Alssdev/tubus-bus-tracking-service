@@ -31,7 +31,7 @@ def init():
   # read and process bus_stops from db
   raw_bus_stops = bus_stop_dao.read_bus_stops()
   for bus_stop in raw_bus_stops:
-    bus_stops[bus_stop[0]] = BStop(bus_stop[0], bus_stop[1], bus_stop[2], bus_routes[bus_stop[3]])
+    bus_stops[bus_stop[0]] = BStop(bus_stop[0], bus_stop[1], bus_stop[2], bus_routes[bus_stop[3]], bus_stop[4])
     bus_routes[bus_stop[3]].bus_stops.append(bus_stops[bus_stop[0]])
 
   # read an process buses from db

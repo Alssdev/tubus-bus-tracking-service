@@ -7,7 +7,8 @@ def read_bus_stops():
       id,
       latitud AS lat,
       longitud AS lng,
-      id_ruta AS route_id
+      id_ruta AS route_id,
+      state
     FROM paradas
   ''')
   bus_stops = cur.fetchall()

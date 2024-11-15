@@ -29,6 +29,7 @@ def create_socketio(app):
   def join_handler(data):
     if data['bus_stop_id'] in bus_stops:
       bus_stop = bus_stops[data['bus_stop_id']]
+      print(f'🤖 user with sid={request.sid}, joined to {bus_stop.id} in route {bus_stop.route.id}')
 
       # join to room
       join_room(bus_stop.room_name)

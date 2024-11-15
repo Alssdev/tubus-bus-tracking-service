@@ -28,7 +28,8 @@ def receive_bus_location():
       active_bus_stops = set(sid_rooms.values())
       for bus_stop in active_bus_stops:
         if bus_stop in bus_route.bus_stops:
-          tracking_services.notify_bus_stops(bus_stop, bus)
+          if bus_stop.is_active:
+            tracking_services.notify_bus_stops(bus_stop, bus)
 
     return 'ok', 200
   except Exception as e:

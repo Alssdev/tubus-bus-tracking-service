@@ -27,12 +27,13 @@ class Bus:
 
 
 class BStop:
-  def __init__(self, id, lat, lng, route):
+  def __init__(self, id, lat, lng, route, state):
     self.id = id
     self.position = Point(lng, lat)
     self.route: BRoute = route
     self.room_name: str = str(uuid.uuid4())
     self.distance = route.route.project(self.position)
+    self.is_active = state == 1
 
 
 class BRoute:
