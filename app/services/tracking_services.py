@@ -12,6 +12,8 @@ from app.services import buses, bus_routes, bus_stops
 import json
 import numpy as np
 
+from app.websockets import notify_room
+
 def init():
   global _bus_routes
   global _bus_stops
@@ -53,8 +55,8 @@ def receive_bus_position (bus_id, lat, lng):
     mapped_point = _map_point_to_route(lat, lng, bus)
 
     if mapped_point:
-      bus.position = mapped_point
-      return True
+      if bus.set_position(mapped_point):
+        return True
 
   return False
 
@@ -68,64 +70,87 @@ def _map_point_to_route (lat: float, lng: float, bus: Bus):
   else:
     return None
 
-# def notify_listeners(bus_point, bus_id):
-#   # bsi ~ bus stop id
-#   for bsi in group_listeners:
-#     assert(bsi in _bus_stops)
+def notify_bus_stops (bus_stop, bus):
+  # Determine if the new bus's position affects my ETA.
+  # This is determined by finding the bus closest to me.
+  # TODO: maybe each bus stop should save who is the closest bus to it
+  closest_bus, closest_distance = _closest_bus(bus_stop)
 
-#     # bus stop and route data
-#     stop = _bus_stops[bsi]
-#     route = _bus_routes[stop.route_id]
+  if bus == closest_bus:
+    print(f'🤖 {bus_stop.id} was notified')
+    notify_listeners(bus_stop, bus, closest_distance)
 
-#     # bus and bus stop distances (from start point of route)
-#     bus_distance = route.project(bus_point)
-#     stop_point = Point(stop.lng, stop.lat)
-#     stop_distance = route.project(stop_point)
 
-#     # clculate the distance from the bus to the bus stop
-#     distance_between = 0
-#     if bus_distance <= stop_distance:
-#       distance_between = (stop_distance - bus_distance)
-#     else:
-#      distance_between = ((route.length - bus_distance) + stop_distance)
+# TODO: very inefficient... estoy cansado gfe
+def _closest_bus (bus_stop: BStop) -> tuple[Bus, float]:
+  buses = bus_stop.route.buses
+  route = bus_stop.route.route
 
-#     route_coords = list(route.coords)
+  closest_bus = None
+  closest_distance = 1000000 # this will NEVER be a valid distance
+  for bus in buses:
+    if bus.is_active and bus.distance:
 
-#     # find the segment by accumulating points between start and end points
-#     segment_coords = []  # Begin with the interpolated start point
-#     segment_aux = [bus_point.coords[0]]
+      # bus is behind me
+      if bus_stop.distance >= bus.distance:
+        if closest_distance > bus_stop.distance - bus.distance:
+          closest_bus = bus
+          closest_distance = bus_stop.distance - bus.distance
 
-#     # Add points in between start and end points based on their projected distances
-#     for coord in route_coords:
-#         point = Point(coord)
-#         dist = route.project(point)
+      # bus is not  behind me
+      else:
+        real_bus_distance = (route.length - bus.distance) + (bus_stop.distance)
+        if closest_distance > real_bus_distance:
+          closest_bus = bus
+          closest_distance = real_bus_distance
 
-#         if bus_distance < stop_distance:
-#           if bus_distance < dist < stop_distance:
-#               segment_coords.append(coord)
-#         elif bus_distance < dist < route.length:
-#             segment_aux.append(coord)
-#         elif dist < stop_distance:
-#           segment_coords.append(coord)
+  return closest_bus, closest_distance
 
-#     segment_aux.extend(segment_coords)
-#     segment_coords = segment_aux
 
-#     # end with the interpolated end point
-#     segment_coords.append(stop_point.coords[0])
+def notify_listeners(bus_stop: BStop, bus: Bus, distance):
+  # at this point bus.distance ALWAYS EXISTS
+  assert(type(bus.position) == Point)
+  assert(type(bus.distance) == np.float64)
 
-#     message = {
-#       'bus': {
-#         'id': bus_id,
-#         'lat': bus_point.y,
-#         'lng': bus_point.x
-#       },
-#       'bus_stop_position': {
-#         'lat': stop.lat,
-#         'lng': stop.lng
-#       },
-#       'distance_km': distance_between * 111, # convert to km
-#       'eta_min': distance_between * 222, # simulation of ETA
-#       'route_points': segment_coords
-#     }
-#     notify_group(message, bsi)
+  route = bus_stop.route.route
+
+  # find the segment by accumulating points between start and end points
+  route_coords = list(route.coords)
+  segment_coords = []  # Begin with the interpolated start point
+  segment_aux = [(bus.position.x, bus.position.y)]
+
+  # Add points in between start and end points based on their projected distances
+  for coord in route_coords:
+      point = Point(coord)
+      dist = route.project(point)
+
+      if bus.distance < bus_stop.distance:
+        if bus.distance < dist < bus_stop.distance:
+            segment_coords.append(coord)
+      elif bus.distance < dist < route.length:
+          segment_aux.append(coord)
+      elif dist < bus_stop.distance:
+        segment_coords.append(coord)
+
+  segment_aux.extend(segment_coords)
+  segment_coords = segment_aux
+
+  # end with the interpolated end point
+  segment_coords.append((bus_stop.position.x, bus_stop.position.y))
+
+  message = {
+    'bus': {
+      'id': bus.id,
+      'lat': bus.position.y,
+      'lng': bus.position.x
+    },
+    'bus_stop_position': {
+      'lat': bus_stop.position.y,
+      'lng': bus_stop.position.x
+    },
+    'distance_km': distance * 111, # convert to km
+    'eta_min': distance * 222, # simulation of ETA
+    'route_points': segment_coords
+  }
+
+  notify_room(message, bus_stop.room_name)

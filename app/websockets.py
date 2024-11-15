@@ -1,11 +1,12 @@
 from flask import request
 from flask_socketio import SocketIO, disconnect, join_room
 
+from app.models import BStop
 from app.services import bus_stops
 
 # handly references
 socketio: SocketIO = None
-sid_rooms = {}
+sid_rooms: dict[int, BStop] = {}
 
 def create_socketio(app):
   global socketio
@@ -31,10 +32,14 @@ def create_socketio(app):
 
       # join to room
       join_room(bus_stop.room_name)
-      sid_rooms[request.sid] = bus_stop.room_name
+      sid_rooms[request.sid] = bus_stop
 
     else:
       # user is doing wierd stuffs
       disconnect()
 
   return socketio
+
+def notify_room (data, room):
+  print(f'> {data}')
+  socketio.send(data, to=room)

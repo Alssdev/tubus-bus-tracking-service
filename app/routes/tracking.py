@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, current_app, make_response
 from app.services import tracking_services
-from app.services import bus_services
+
+from app.websockets import sid_rooms
+from app.services import buses
 
 bp = Blueprint('tracking', __name__)
 
@@ -20,9 +22,15 @@ def receive_bus_location():
 
     if valid:
       # notify listeners
-      # TODO: ...
-      pass
+      bus = buses[data['bus_id']]
+      bus_route = bus.route
+
+      active_bus_stops = set(sid_rooms.values())
+      for bus_stop in active_bus_stops:
+        if bus_stop in bus_route.bus_stops:
+          tracking_services.notify_bus_stops(bus_stop, bus)
 
     return 'ok', 200
-  except:
+  except Exception as e:
+    print(e)
     return 'bad', 400
