@@ -11,7 +11,7 @@ sid_rooms: dict[int, BStop] = {}
 def create_socketio(app):
   global socketio
 
-  socketio = SocketIO(app)
+  socketio = SocketIO(app, cors_allowed_origins="*")
 
   @socketio.on('connect')
   def connect_handler(data):
