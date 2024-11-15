@@ -1,7 +1,6 @@
 import app.dao.dao as dao
 
-# TODO: add documentation
-def read_bus_info (bus_id):
+def read_buses ():
   cur = dao.get_cursor()
   cur.execute('''
     SELECT
@@ -9,9 +8,8 @@ def read_bus_info (bus_id):
       state AS is_active,
       ruta_id AS route_id
     FROM bus
-    WHERE id=%s
-  ''', (bus_id,))
-  bus = cur.fetchone()
+  ''')
+  buses = cur.fetchall()
   cur.close()
 
-  return bus
+  return buses

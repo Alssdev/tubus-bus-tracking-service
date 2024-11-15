@@ -6,32 +6,23 @@ bp = Blueprint('tracking', __name__)
 
 @bp.route('/', methods=['POST'])
 def receive_bus_location():
-  # body is received as a json
+  # { lat, lng, bus_id }
   data = request.get_json()
 
-  # retrive bus' data
-  bus = bus_services.fetch_bus_info(data['bus_id'])
-  if bus:
-    # bus must be active to accept tracking info
-    if bus['is_active']:
-      # then save new position
-      newPoint = tracking_services.map_point_to_route(data['lat'], data['lng'], bus['route_id'], data['bus_id'])
+  try:
+    # valid data
+    assert(type(data['bus_id']) == int)
+    assert(type(data['lat']) == float)
+    assert(type(data['lng']) == float)
 
-      # if error
-      if not newPoint:
-        return jsonify({ 'new_location': None })
+    # process new bus position
+    valid = tracking_services.receive_bus_position(data['bus_id'], data['lat'], data['lng'])
 
-      tracking_services.notify_listeners(newPoint, data['bus_id'])
+    if valid:
+      # notify listeners
+      # TODO: ...
+      pass
 
-      return jsonify({
-        'new_location': {
-          'lat': newPoint.y,
-          'lng': newPoint.x,
-        }
-      })
-
-    else:
-      return jsonify({ 'error': 'BUS_NOT_ACTIVE' }), 400
-
-  else:
-    return jsonify({ 'error': 'BUS_NOT_FOUND' }), 400
+    return 'ok', 200
+  except:
+    return 'bad', 400

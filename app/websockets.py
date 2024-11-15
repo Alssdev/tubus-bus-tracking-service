@@ -1,31 +1,40 @@
-from flask_socketio import SocketIO, join_room
+from flask import request
+from flask_socketio import SocketIO, disconnect, join_room
 
-socketio = None | SocketIO
-group_listeners = []
+from app.services import bus_stops
 
-def _handle_connect(data):
-  print('New user connected')
-
-def _handle_join(data):
-  bus_stop_id = data['bus_stop_id']
-
-  if bus_stop_id not in group_listeners:
-    group_listeners.append(bus_stop_id)
-
-  join_room(bus_stop_id)
-
-def _handle_error(error):
-  print(error)
+# handly references
+socketio: SocketIO = None
+sid_rooms = {}
 
 def create_socketio(app):
   global socketio
 
   socketio = SocketIO(app)
-  socketio.on_event('connect', _handle_connect)
-  socketio.on_event('join', _handle_join)
+
+  @socketio.on('connect')
+  def connect_handler(data):
+    print(f'🤖 user with sid={request.sid}')
+
+  @socketio.on('disconnect')
+  def disconnect_handler():
+    print(f'🤖 bye user with sid={request.sid}')
+
+    # maybe the user never suscribes to a room
+    if request.sid in sid_rooms:
+      sid_rooms.pop(request.sid)
+
+  @socketio.on('join')
+  def join_handler(data):
+    if data['bus_stop_id'] in bus_stops:
+      bus_stop = bus_stops[data['bus_stop_id']]
+
+      # join to room
+      join_room(bus_stop.room_name)
+      sid_rooms[request.sid] = bus_stop.room_name
+
+    else:
+      # user is doing wierd stuffs
+      disconnect()
 
   return socketio
-
-def notify_group(data, group):
-  print(f'> listeners notified')
-  socketio.send(data, to=group)

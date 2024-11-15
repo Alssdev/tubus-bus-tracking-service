@@ -9,7 +9,6 @@ def read_bus_stops():
       longitud AS lng,
       id_ruta AS route_id
     FROM paradas
-    WHERE id_ruta = 1
   ''')
   bus_stops = cur.fetchall()
   cur.close()
