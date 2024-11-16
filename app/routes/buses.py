@@ -34,6 +34,5 @@ def update_bus_state(bus_id):
     bus_id = int(bus_id)
     if bus_id in buses:
         buses[bus_id].is_active = data['status'] == 1
-        print('bus modificado correctamente')
 
     return 'ok', 200
