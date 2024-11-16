@@ -19,8 +19,21 @@ def bus_location(bus_id):
         'lng': bus.position.x
       })
 
+  print('bus not found');
   return jsonify({
     'error': 'bus not found',
     'lat': None,
     'lng': None
   })
+
+
+@bp.route('/state/<bus_id>/id', methods=['POST'])
+def update_bus_state(bus_id):
+    data = request.get_json()
+
+    bus_id = int(bus_id)
+    if bus_id in buses:
+        buses[bus_id].is_active = data['status'] == 1
+        print('bus modificado correctamente')
+
+    return 'ok', 200
