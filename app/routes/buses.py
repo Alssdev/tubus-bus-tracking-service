@@ -36,3 +36,7 @@ def update_bus_state(bus_id):
         buses[bus_id].is_active = data['status'] == 1
 
     return 'ok', 200
+
+@bp.route('/', methods=['POST'])
+def update_bus_list(bus_id):
+    return 'ok', 200
