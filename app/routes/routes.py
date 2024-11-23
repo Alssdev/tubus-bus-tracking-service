@@ -9,7 +9,7 @@ from app.services import bus_routes
 bp = Blueprint('rutas', __name__)
 
 @bp.route('/<route_id>/id', methods=['POST'])
-def update_bus_state(route_id):
+def update_bus_state():
     route_id = int(route_id)
     if route_id in bus_routes:
       # get bus route
@@ -26,4 +26,8 @@ def update_bus_state(route_id):
             route=LineString(raw_bus_routes[route_id])
       )
 
+    return 'ok', 200
+
+@bp.route('/', methods=['POST'])
+def update_bus_route_list():
     return 'ok', 200
