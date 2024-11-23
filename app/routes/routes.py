@@ -11,6 +11,7 @@ bp = Blueprint('rutas', __name__)
 @bp.route('/<route_id>/id', methods=['POST'])
 def update_bus_state(route_id):
     route_id = int(route_id)
+
     if route_id in bus_routes:
       # get bus route
       bus_route = bus_routes[route_id]
@@ -19,11 +20,11 @@ def update_bus_state(route_id):
 
       for route_id2 in raw_bus_routes:
         if route_id2 == route_id:
-          bus_routes[route_id] = BRoute(
-            id = route_id,
+          bus_routes[route_id2] = BRoute(
+            id = route_id2,
             buses=bus_route.buses,
             bus_stops=bus_route.bus_stops,
-            route=LineString(raw_bus_routes[route_id])
-      )
+            route=LineString(raw_bus_routes[route_id2])
+          )
 
     return 'ok', 200
