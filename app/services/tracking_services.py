@@ -44,7 +44,6 @@ def init():
       is_active=bus[1],
       route=bus_routes[bus[2]]
     )
-    route=bus_routes[bus[2]].buses.append(buses[bus[0]])
 
 def receive_bus_position (bus_id, lat, lng):
   # find bus
