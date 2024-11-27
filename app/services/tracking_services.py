@@ -1,4 +1,3 @@
-from typing_extensions import List
 from shapely.geometry.linestring import LineString
 from shapely.geometry.point import Point
 
@@ -9,15 +8,11 @@ from app.dao import bus_stop_dao
 
 from app.services import buses, bus_routes, bus_stops
 
-import json
 import numpy as np
 
 from app.websockets import notify_room
 
 def init():
-  global _bus_routes
-  global _bus_stops
-
   # read and process bus routes from db
   raw_bus_routes = tracking_dao.read_bus_routes()
   for route_id in raw_bus_routes:
@@ -30,6 +25,7 @@ def init():
 
   # read and process bus_stops from db
   raw_bus_stops = bus_stop_dao.read_bus_stops()
+  
   for bus_stop in raw_bus_stops:
     bus_stops[bus_stop[0]] = BStop(bus_stop[0], bus_stop[1], bus_stop[2], bus_routes[bus_stop[3]], bus_stop[4])
     bus_routes[bus_stop[3]].bus_stops.append(bus_stops[bus_stop[0]])

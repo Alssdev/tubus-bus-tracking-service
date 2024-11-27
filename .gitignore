@@ -4,6 +4,9 @@ __pycache__/
 *.pyo
 *.pyd
 
+# tests
+map.html
+
 # C extensions
 *.so
 

@@ -1,11 +1,12 @@
 from flask import Flask
 
-from .config import Config
-from .routes import tracking
-from .routes import buses
-from .routes import stops
-from .routes import routes
-from .dao import dao
+from app.config import Config
+from app.routes import places
+from app.routes import tracking
+from app.routes import buses
+from app.routes import stops
+from app.routes import routes
+from app.dao import dao
 
 from app import websockets
 
@@ -25,6 +26,7 @@ def create_app():
   app.register_blueprint(buses.bp, url_prefix="/api/buses")
   app.register_blueprint(stops.bp, url_prefix="/api/paradas")
   app.register_blueprint(routes.bp, url_prefix="/api/rutas")
+  app.register_blueprint(places.bp, url_prefix='/api/places')
 
   # init db
   dao.init()
