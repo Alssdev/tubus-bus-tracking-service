@@ -40,7 +40,7 @@ def update_bus_state(bus_id):
   return 'ok', 200
 
 @bp.route('/', methods=['POST'])
-def update_bus_list(body):
+def update_bus_list():
   # read updated bus list from db
   raw_buses = bus_dao.read_buses()
   for bus in raw_buses:
