@@ -8,7 +8,7 @@ class Bus:
   def __init__(self, id, lat, lng, is_active, route):
     self.id = id
     self.position: Point | None =  Point(lng, lat) if lat and lng else None
-    self.is_active: bool = is_active
+    self.is_active: bool = is_active == 1
     self.route: BRoute = route
     self.distance: float | None = None
 
