@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-import folium
 import polyline
 
 from app.services import google_maps, stop_services, route_services

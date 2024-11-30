@@ -36,7 +36,7 @@ def find_nearby_user_to_stop(lng, lat):
   stop_tree = cKDTree(coords)
 
   # find closest bus stops
-  stop_indexs = stop_tree.query_ball_point((lng, lat), r= 0.5 / 111) # 500m
+  stop_indexs = stop_tree.query_ball_point((lng, lat), r= 1 / 111) # 500m
 
   # use google maps to identiy the closest bust stop by walking
   if len(stop_indexs) > 0:
