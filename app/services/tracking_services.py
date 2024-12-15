@@ -40,6 +40,7 @@ def init():
       is_active=bus[1],
       route=bus_routes[bus[2]]
     )
+    bus_routes[bus[2]].buses.append(buses[bus[0]])
 
 def receive_bus_position (bus_id, lat, lng):
   # find bus
@@ -74,6 +75,8 @@ def notify_bus_stops (bus_stop, bus):
   if bus == closest_bus:
     print(f'🤖 {bus_stop.id} was notified')
     notify_listeners(bus_stop, bus, closest_distance)
+  else:
+    print('🤖 closest_bus is NONE')
 
 def notify_dahsboards(bus):
   notify_room({
