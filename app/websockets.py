@@ -39,6 +39,11 @@ def create_socketio(app):
       # user is doing wierd stuffs
       disconnect()
 
+  @socketio.on('buses_join')
+  def buses_join_handler ():
+    print(f'🤖 dashboard connected with sid={request.sid}')
+    join_room('dashboard')
+
   return socketio
 
 def notify_room (data, room):

@@ -75,6 +75,14 @@ def notify_bus_stops (bus_stop, bus):
     print(f'🤖 {bus_stop.id} was notified')
     notify_listeners(bus_stop, bus, closest_distance)
 
+def notify_dahsboards(bus):
+  notify_room({
+    'bus': {
+      'id': bus.id,
+      'lat': bus.position.y,
+      'lng': bus.position.x
+    }
+  }, 'dashboard')
 
 # TODO: very inefficient... estoy cansado gfe
 def _closest_bus (bus_stop: BStop) -> tuple[Bus, float]:

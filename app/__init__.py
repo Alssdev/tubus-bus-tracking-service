@@ -10,6 +10,8 @@ from app.dao import dao
 
 from app import websockets
 
+import logging
+
 app = None
 
 def create_app():
@@ -17,6 +19,9 @@ def create_app():
   global socketio
 
   app = Flask(__name__)
+  log = logging.getLogger('werkzeug')
+  log.setLevel(logging.ERROR)
+
   socketio = websockets.create_socketio(app)
   app.config.from_object(Config)
   app.app_context().push()
